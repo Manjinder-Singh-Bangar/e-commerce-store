@@ -122,3 +122,55 @@ export const getRecommendation = async (req, res) =>{
         return res.status(500).json({message: "Something went wrong while getting recommendations"})
     }
 }
+
+export const getProductByCategory = async(req, res) => {
+    try {
+        const {category} = req.params;
+
+        if(!category){
+            return res.status(401).json({message: "Category is required in order to fetch products of specific category"})
+
+        }
+
+        const products = await Product.find({category})
+
+        if(!products) return res.status(401).json({message: "products not found"})
+
+        return res.status(200).json({message: "Products have been fetched", products})
+    } catch (error) {
+        console.error("Error from getProductByCategory", error)
+        return res.status(500).json({message: error.message})
+    }
+}
+
+const updateFeaturedProductCache = async () => {
+    try {
+        const featuredProducts = await Product.find({isFeatured:true}).lean();
+        await client.set("featured_products", JSON.stringify(featuredProducts))
+    } catch (error) {
+        console.log("Error occured during update Featured Products cache");
+        return res.status(500).json({message: error.message || "Error occured while updating featured product cache"})
+    }
+}
+
+export const toggleFeaturedProduct = async (req, res) => {
+    try {
+        const {id} = req.params;
+
+        if(!id) return res.status(401).json({message: "Id is required in order to change featured list of products"})
+        
+        const product = await Product.findById(id)
+
+        if(product){
+            product.isFeatured = !product.isFeatured
+            const productUpdated = await product.save();
+            await updateFeaturedProductCache();
+            return res.status(203).json({message: "isfeatured has been toggeled", data: productUpdated})
+        }else{
+            return res.status(400).json({message: "Product not found"})
+        }
+    } catch (error) {
+        console.error("Error occured during toggling the isFeatured option")
+        return res.status(500).json({message: error.message || "Error occured during setting isFeatured"});
+    }
+}
