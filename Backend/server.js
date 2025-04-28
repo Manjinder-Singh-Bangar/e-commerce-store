@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cartRoutes from "./routes/cart.route.js"
 import couponRoutes from "./routes/coupon.route.js"
 import paymentRoutes from "./routes/payment.route.js"
+import analyticsRoutes from "./routes/analytics.route.js"
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api/products", productRoutes)
 app.use("/api/cart",cartRoutes )
 app.use("/api/coupon", couponRoutes)
 app.use("/api/payment", paymentRoutes)
+app.use("/api/analytics", analyticsRoutes)
 app.listen(process.env.PORT, ()=> {
     connectDb();
     console.log("Server is running on the port",process.env.PORT);
