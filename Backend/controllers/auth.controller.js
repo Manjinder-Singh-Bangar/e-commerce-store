@@ -157,3 +157,12 @@ export const refreshAccessToken = async (req, res) => {
         return res.status(500).json({message: error.message || "Something went wrong while refreshing access token"})
     }
 }
+
+
+export const getProfile = async (req, res) => {
+	try {
+		res.json(req.user);
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
