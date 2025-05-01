@@ -127,8 +127,8 @@ export const login = async (req, res) => {
 
 
     catch (error) {
-        console.log("Error occured in the login function ",error)
-        res.status(500).json({message:error.message || "Something went wrong while log In"})
+        console.log("Error occured while logging into the website ",error)
+        res.status(500).json({message:error.message || "Something went wrong while logging into the website"})
     }
 }
 
@@ -161,7 +161,7 @@ export const refreshAccessToken = async (req, res) => {
 
 export const getProfile = async (req, res) => {
 	try {
-		res.json(req.user);
+		res.json({user: req.user});
 	} catch (error) {
 		res.status(500).json({ message: "Server error", error: error.message });
 	}

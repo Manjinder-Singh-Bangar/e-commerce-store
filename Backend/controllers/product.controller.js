@@ -1,6 +1,6 @@
 import { client } from "../lib/redis.js";
 import Product from "../models/product.model.js"
-import cloudinary, { deleteOnCloudinary, uploadOnCloudinary } from "../lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const getAllProducts = async (req, res) => {
     try {
@@ -33,69 +33,56 @@ export const getFeaturedProducts = async (req, res) => {
 }
 
 export const createProduct = async (req, res) => {
-    console.log(req)
-    try {
-        
-        const {name, description, price, category, isFeatured } = req.body
-        const {image} = req.files
-        console.log("Image in the product controller ",image)
-        if(!name || !description || !price || !category || !isFeatured){
-            return res.status(401).json({message: "All fields are required"})
-        }
+	try {
+		const { name, description, price, image, category } = req.body;
 
-        console.log(req.files)
+		let cloudinaryResponse = null;
 
-        if(!image){
-            return res.status(401).json({message: "Image is required"})
-        }
+		if (image) {
+			cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
+		}
 
-        let imagePath = image[0].path;
-        console.log(image)
-        let cloudinaryResponse;
-        try {
-            cloudinaryResponse = await uploadOnCloudinary(imagePath);
-            
-        } catch (error) {
-            console.log(error)
-        }
-        console.log("cloudinary response", cloudinaryResponse)
-        const product = await Product.create(
-            {
-                name,
-                description,
-                price,
-                category,
-                image:cloudinaryResponse?.secure_url,
-                isFeatured
-            }
-        )
+		const product = await Product.create({
+			name,
+			description,
+			price,
+			image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
+			category,
+		});
 
-        return res.status(201).json({message: "Product created", product})
-        
-    } catch (error) {
-        return res.status(500).json({message: `Error in the create Product controller ${error.message}`|| "Something went wrong"})
-    }
-}
+		res.status(201).json(product);
+	} catch (error) {
+		console.log("Error in createProduct controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
 
 export const deleteProduct = async (req, res) => {
-    try {
-        const {id} = req.params;
+	try {
+		const product = await Product.findById(req.params.id);
 
-        const product = await Product.findById(id)
+		if (!product) {
+			return res.status(404).json({ message: "Product not found" });
+		}
 
-        if(!product) return res.status(404).json({message: "Product not found"})
+		if (product.image) {
+			const publicId = product.image.split("/").pop().split(".")[0];
+			try {
+				await cloudinary.uploader.destroy(`products/${publicId}`);
+				console.log("deleted image from cloduinary");
+			} catch (error) {
+				console.log("error deleting image from cloduinary", error);
+			}
+		}
 
-        if(product.image){
-            await deleteOnCloudinary(product.image)
-        }
+		await Product.findByIdAndDelete(req.params.id);
 
-        await Product.findByIdAndDelete(id)
-
-        return res.status(200).json({message: "Product deleted successfully"})
-    } catch (error) {
-        return res.status(500).json({message: error.message || "Something went wrong while deleting the product" })
-    }
-}
+		res.json({ message: "Product deleted successfully" });
+	} catch (error) {
+		console.log("Error in deleteProduct controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
 
 export const getRecommendation = async (req, res) =>{
     try {
@@ -165,7 +152,7 @@ export const toggleFeaturedProduct = async (req, res) => {
             product.isFeatured = !product.isFeatured
             const productUpdated = await product.save();
             await updateFeaturedProductCache();
-            return res.status(203).json({message: "isfeatured has been toggeled", data: productUpdated})
+            return res.status(200).json({message: "isfeatured has been toggeled", data: productUpdated})
         }else{
             return res.status(400).json({message: "Product not found"})
         }
