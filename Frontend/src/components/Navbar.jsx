@@ -5,7 +5,7 @@ import { useUserStore } from '../stores/useUserStore';
 
 const Navbar = () => {
     const {user, logout} = useUserStore();
-    const admin = user?.role === "Admin";
+    const admin = user?.role === "admin";
   return (
     <header className='fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-emerald-800'>
         <div className='container mx-auto px-4 py-3'>
