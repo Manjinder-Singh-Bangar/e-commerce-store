@@ -22,23 +22,20 @@ export const addToCart = async (req, res) => {
 }
 
 export const removeAllFromCart = async (req, res) => {
-    try {
-        const {productId} = req.body;
-
-        const user = req.user;
-
-        if(!productId) {
-            user.cartItems = [];
-        }else{
-            user.cartItems = user.cartItems.filter((item) = item !== productId)
-        }
-        await user.save();
-        return res.json(user.cartItems);
-    } catch (error) {
-        console.error("Error while removing item from cart ",error.message)
-        return res.status(500).json({message: error.message || "Something went wrong while removing item from cart"})
-    }
-}
+	try {
+		const { productId } = req.body;
+		const user = req.user;
+		if (!productId) {
+			user.cartItems = [];
+		} else {
+			user.cartItems = user.cartItems.filter((item) => item.id !== productId);
+		}
+		await user.save();
+		res.json(user.cartItems);
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
 
 export const updateQuantity = async (req, res) => {
     try {
