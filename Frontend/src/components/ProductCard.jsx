@@ -3,17 +3,19 @@ import React from 'react'
 import { useProductStore } from '../stores/useProductStore'
 import toast from 'react-hot-toast'
 import { useUserStore } from '../stores/useUserStore'
+import { useCartStore } from '../stores/useCartStore'
 
 const ProductCard = ({product}) => {
-    const {user} = useUserStore()
+    const {user} = useUserStore();
+    const {addToCart, cart} = useCartStore();
 
     const handleAddToCart = () => {
         if(!user) {
             toast.error("Please login or signup", {id: "login"})
 
         }else{
-            // add to cart logic
-            toast.success("added to cart")
+            addToCart(product)
+            console.log(cart)
         }
     }
   return (
