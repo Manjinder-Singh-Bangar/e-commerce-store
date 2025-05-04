@@ -85,5 +85,17 @@ export const useProductStore = create((set,get) => ({
             set({loading:false})
             toast.error(error?.response?.data?.message || "Cannot find product of this category")
         }
-    }
+    },
+
+    fetchFeaturedProducts: async () => {
+		set({ loading: true });
+		try {
+			const response = await axios.get("/products/featured-products");
+            console.log(response)
+			set({ products: response.data, loading: false });
+		} catch (error) {
+			set({ error: "Failed to fetch products", loading: false });
+			console.log("Error fetching featured products:", error);
+		}
+	},
 }))
