@@ -2,10 +2,10 @@
 	"name": "e-commerce-store",
 	"version": "1.0.0",
 	"description": "",
-	"main": "backend/server.js",
+	"main": "Backend/server.js",
 	"scripts": {
-		"dev": "nodemon backend/server.js",
-		"start": "node backend/server.js",
+		"dev": "nodemon Backend/server.js",
+		"start": "node Backend/server.js",
 		"build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
 	},
 	"keywords": [],
