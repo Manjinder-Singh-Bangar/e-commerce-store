@@ -17,6 +17,8 @@ app.use(express.json({limit: "10mb"}))
 app.use(cookieParser())
 configDotenv()
 
+const __dirname = path.resolve();
+
 app.use("/api/auth", authRoutes)
 app.use("/api/products", productRoutes)
 app.use("/api/cart",cartRoutes )
