@@ -20,7 +20,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/products", productRoutes)
 app.use("/api/cart",cartRoutes )
 app.use("/api/coupon", couponRoutes)
-app.use("/api/payment", paymentRoutes)
+app.use("/api/payments", paymentRoutes)
 app.use("/api/analytics", analyticsRoutes)
 app.listen(process.env.PORT, ()=> {
     connectDb();

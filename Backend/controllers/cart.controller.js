@@ -23,7 +23,7 @@ export const addToCart = async (req, res) => {
 
 export const removeAllFromCart = async (req, res) => {
 	try {
-		const { productId } = req.body;
+		const productId = req.body?.productId;
 		const user = req.user;
 		if (!productId) {
 			user.cartItems = [];

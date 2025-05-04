@@ -12,6 +12,8 @@ import CategoryPage from "./pages/CategoryPage"
 import CartPage from "./pages/CartPage"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useCartStore } from "./stores/useCartStore"
+import PurchaseSuccessPage from "./pages/PurchaseSuccessPage"
+import PurchaseCancelPage from "./pages/PurchaseCancelPage"
 
 function App() {
   const {user, checkingAuth, checkAuth} = useUserStore();
@@ -48,6 +50,8 @@ function App() {
 					<Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' />} />
 					<Route path='/cart' element={user ? <CartPage /> : <Navigate to="/login" />} />
 					<Route path='/category/:category' element={<CategoryPage />} />
+					<Route path='/purchase-success' element={user ? <PurchaseSuccessPage /> : <Navigate to="/login" />} />
+					<Route path='/purchase-cancel' element={user ? <PurchaseCancelPage /> : <Navigate to="/login" />} />
         </Routes>
       </div>
       <Toaster />
